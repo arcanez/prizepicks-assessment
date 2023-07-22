@@ -33,4 +33,12 @@ func TestCages(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, c, cages)
 	})
+
+	t.Run("AddCage", func(t *testing.T) {
+		c := Cage{PowerStatus: "ACTIVE", MaximumCapacity: 10}
+		cage, err := AddCage(c)
+		c.ID = cage.ID
+		require.NoError(t, err)
+		require.Equal(t, c, cage)
+	})
 }
