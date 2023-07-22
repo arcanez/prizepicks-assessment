@@ -17,10 +17,9 @@ func TestDinosaurs(t *testing.T) {
 		})
 
 		t.Run("InvalidID", func(t *testing.T) {
-			d := Dinosaur{ID: 0, Name: "", Species: "", FoodPreference: "", CageID: nil}
 			dinosaur, err := GetDinosaur(0)
 			require.ErrorIs(t, err, sql.ErrNoRows)
-			require.Equal(t, d, dinosaur)
+			require.Equal(t, Dinosaur{}, dinosaur)
 		})
 	})
 
