@@ -164,7 +164,7 @@ func updateDinosaur(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	dinosaur, err = models.UpdateDinosaur(id, dinosaur)
+	dinosaur, err = models.UpdateDinosaur(dinosaur)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -196,15 +196,15 @@ func deleteDinosaur(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	rowsAffected, err := models.DeleteDinosaur(id)
-	if err != nil {
+	if err = models.DeleteDinosaur(id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("dinosaur id %d was not found.", id)})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("dinosaur id %d was not found.", id)})
-		return
-	}
+
 	c.JSON(http.StatusOK, gin.H{"data": fmt.Sprintf("dinosaur id %d successfully removed.", id)})
 }
 

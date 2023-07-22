@@ -5,7 +5,10 @@ run:
 	CGO_ENABLED=1 go run ./main.go
 
 test:
-	CGO_ENABLED=1 go test -v -count=1 -race ./...
+	CGO_ENABLED=1 go test -v -count=1 -race ./... 2> /dev/null
+
+testsum:
+	CGO_ENABLED=1 gotestsum -- -v -count=1 -race ./... 2> /dev/null
 
 vendor:
 	go mod vendor

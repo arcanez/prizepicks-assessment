@@ -42,18 +42,19 @@ func AddDinosaur(dinosaur Dinosaur) (Dinosaur, error) {
 	return GetDinosaur(int(id))
 }
 
-func UpdateDinosaur(id int, dinosaur Dinosaur) (Dinosaur, error) {
-	_, err := DB.Exec("UPDATE dinosaurs SET name = ?, species = ?, food_preference = ? WHERE id = ?", dinosaur.Name, dinosaur.Species, dinosaur.FoodPreference, id)
+func UpdateDinosaur(dinosaur Dinosaur) (Dinosaur, error) {
+	_, err := DB.Exec("UPDATE dinosaurs SET name = ?, species = ?, food_preference = ? WHERE id = ?", dinosaur.Name, dinosaur.Species, dinosaur.FoodPreference, dinosaur.ID)
 	if err != nil {
 		return Dinosaur{}, err
 	}
-	return GetDinosaur(id)
+	return GetDinosaur(dinosaur.ID)
 }
 
-func DeleteDinosaur(id int) (int64, error) {
-	res, err := DB.Exec("DELETE FROM dinosaurs WHERE id = ?", id)
+func DeleteDinosaur(id int) error {
+	_, err := GetDinosaur(id)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return res.RowsAffected()
+	_, err = DB.Exec("DELETE FROM dinosaurs WHERE id = ?", id)
+	return err
 }
