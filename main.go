@@ -38,19 +38,13 @@ func setupRouter() *gin.Engine {
 
 func getCages(c *gin.Context) {
 	cages, err := models.GetCages()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusOK, gin.H{"data": cages})
 }
 
 func getCage(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	cage, err := models.GetCage(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -65,19 +59,13 @@ func getCage(c *gin.Context) {
 
 func getDinosaurs(c *gin.Context) {
 	dinosaurs, err := models.GetDinosaurs()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusOK, gin.H{"data": dinosaurs})
 }
 
 func getDinosaur(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	dinosaur, err := models.GetDinosaur(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -97,10 +85,7 @@ func addCage(c *gin.Context) {
 		return
 	}
 	cage, err := models.AddCage(cage)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusCreated, gin.H{"data": cage})
 }
 
@@ -111,19 +96,13 @@ func addDinosaur(c *gin.Context) {
 		return
 	}
 	dinosaur, err := models.AddDinosaur(dinosaur)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusCreated, gin.H{"data": dinosaur})
 }
 
 func updateCage(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	cage, err := models.GetCage(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -138,19 +117,13 @@ func updateCage(c *gin.Context) {
 		return
 	}
 	cage, err = models.UpdateCage(id, cage)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusOK, gin.H{"data": cage})
 }
 
 func updateDinosaur(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	dinosaur, err := models.GetDinosaur(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -165,24 +138,15 @@ func updateDinosaur(c *gin.Context) {
 		return
 	}
 	dinosaur, err = models.UpdateDinosaur(dinosaur)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	c.JSON(http.StatusOK, gin.H{"data": dinosaur})
 }
 
 func deleteCage(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	rowsAffected, err := models.DeleteCage(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	if rowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("cage id %d was not found.", id)})
 		return
@@ -192,10 +156,7 @@ func deleteCage(c *gin.Context) {
 
 func deleteDinosaur(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	if err = models.DeleteDinosaur(id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("dinosaur id %d was not found.", id)})
@@ -210,15 +171,9 @@ func deleteDinosaur(c *gin.Context) {
 
 func addDinosaurToCage(c *gin.Context) {
 	cageID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	dinosaurID, err := strconv.Atoi(c.Param("dinosaur_id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	err = models.AddDinosaurToCage(cageID, dinosaurID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
@@ -229,15 +184,9 @@ func addDinosaurToCage(c *gin.Context) {
 
 func updateDinosaurCage(c *gin.Context) {
 	cageID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	dinosaurID, err := strconv.Atoi(c.Param("dinosaur_id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	err = models.UpdateDinosaurCage(cageID, dinosaurID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
@@ -248,19 +197,20 @@ func updateDinosaurCage(c *gin.Context) {
 
 func deleteDinosaurFromCage(c *gin.Context) {
 	cageID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	dinosaurID, err := strconv.Atoi(c.Param("dinosaur_id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	checkErr(c, err)
 	err = models.DeleteDinosaurFromCage(cageID, dinosaurID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"cage_id": cageID, "dinosaur_id": dinosaurID})
+}
+
+func checkErr(c *gin.Context, err error) {
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 }
